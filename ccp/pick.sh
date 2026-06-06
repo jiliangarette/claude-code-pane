@@ -52,7 +52,6 @@ selorder=()
 is_bal() { case " 1 2 4 6 8 9 " in *" $1 "*) return 0 ;; *) return 1 ;; esac; }
 
 render() {
-  term_size
   hide_cursor; printf '%s' "${ESC}[H"
   local i maxw=0
   for ((i=0; i<n; i++)); do (( ${#names[i]} > maxw )) && maxw=${#names[i]}; done
@@ -92,6 +91,8 @@ render() {
   printf '%s' "${ESC}[J"
 }
 
+term_size
+trap term_size WINCH
 clear
 while true; do
   render

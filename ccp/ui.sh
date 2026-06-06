@@ -25,7 +25,14 @@ term_size() {
   ROWS=$r; COLS=$c
 }
 
-strip() { printf '%s' "$1" | sed "s/${ESC}\[[0-9;]*m//g"; }
+strip() {
+  local s="$1"
+  while [[ $s == *$'\033['* ]]; do
+    local pre=${s%%$'\033['*} rest=${s#*$'\033['}
+    s="$pre${rest#*m}"
+  done
+  printf '%s' "$s"
+}
 
 hcenter() {
   local s="$1" plain pad

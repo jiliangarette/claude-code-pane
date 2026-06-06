@@ -129,7 +129,7 @@ local function build_grid(win, keep, n, want_claude, projlist)
   pcall(function() win:toast_notification('Panes', 'Opened ' .. #result .. ' pane(s)', nil, 1500) end)
   for k, p in ipairs(result) do
     local proj = (projlist and projlist[k] and norm(projlist[k])) or project_for(k)
-    wezterm.time.call_after(0.15, function()
+    wezterm.time.call_after(0.05 * (k - 1) + 0.30, function()
       pcall(function() p:send_text('cd "' .. proj .. '" && clear\r') end)
     end)
     if want_claude then
