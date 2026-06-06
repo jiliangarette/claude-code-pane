@@ -8,6 +8,16 @@ so you can run Claude Code across your whole workspace without manually opening,
 arranging, and hunting through windows. It's terminal-first and lightweight: panes
 are cheap shells, and Claude launches exactly where you want it.
 
+<p align="center">
+  <img src="media/panes.gif" alt="Panes — choose a layout, get a grid of Claude Code panes" width="760" />
+</p>
+
+<p align="center">
+  <a href="https://github.com/jiliangarette/claude-code-pane/releases/download/v0.1.0/panes.mp4">▶ Watch the full video</a>
+  ·
+  <a href="https://panes-jgarette0s-projects.vercel.app">Live site</a>
+</p>
+
 ## What it does
 
 - **Centered launcher** — pick a balanced grid (1 / 2 / 4 / 6 / 8 / 9), or press `0` to choose exact projects.
