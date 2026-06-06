@@ -11,18 +11,26 @@ before commit; failures reverted. Performance and macOS are the two top prioriti
   route code-splitting + vendor chunks (Docs/Install/Handoff now lazy); full reduced-motion
   guards; lighter background blur. Built, deployed, routes 200.
 
-## Next (in order)
-- **macOS seams (Windows-unchanged):** bash-3.2-clean pick.sh (drop `declare -A`),
-  OS-detection `default_shell()` in wezterm.lua, portable Ctrl+H help split, self-detecting
-  settings template
-- `install.sh` + `bootstrap.sh` (author; Mac run = owner)
-- Docs/site: fix onboarding inaccuracies + add real keybindings + "Windows/macOS/Linux"
-- SEO: OG image + meta, robots/sitemap; demo GIF staged for hero
-- launch.sh escape hatch, a11y (contrast/focus rings)
+## Done — session 2 (owner back; whole queue cleared)
+- **macOS seams:** OS-detected `default_shell()`, bash-3.2-clean `pick.sh`, portable Ctrl+H,
+  self-detecting settings template (shipped session 1; docs now match)
+- `install.sh` (macOS/Linux) + `bootstrap.sh` (curl one-liner) + `bootstrap.ps1` (irm one-liner)
+- **CI:** `.github/workflows/ci.yml` — bash -n + shellcheck on `ccp/*.sh`, and `wezterm show-keys`
+  on Ubuntu asserting custom bindings loaded (not defaults)
+- Docs/README/Install/Footer: real keybindings (added Ctrl+X, leader O/F/S/R/X/W), onboarding +
+  `roots.txt` accuracy, honest cross-platform copy (Windows daily-driven; mac/linux supported)
+- **SEO:** `robots.txt`, `sitemap.xml`, OG/Twitter/canonical/theme-color tags, generated `og.png`
+- **Demo GIF on hero** (reduced-motion users get the animated grid fallback)
+- **a11y:** contrast bumps (`--color-faint`/`--color-muted`), focus-visible rings on
+  buttons/copy/nav, `aria-hidden` on decorative glyphs/dots
+- **launch.sh esc/q → drops to a plain shell** (pipe-verified: number/picker/esc/enter paths)
+- **wezterm A8:** one grid toast instead of two; dropped the redundant pre-picker `clear`
 
-## Flagged for owner (won't auto-ship)
+## Flagged for owner (won't auto-ship — environment, not the product)
 - **ssh-agent leak:** your `~/.bashrc` spawns a new `ssh-agent` per shell — ~215 leaked
   processes measured. Panes opens many shells, so it multiplies. Fix = a shared-agent guard
-  in `.bashrc` (I won't auto-edit your dotfile). Ask me and I'll show the snippet.
-- Drop `-l` from default_prog (~250ms/pane faster) — needs a one-command PATH check first.
+  in `.bashrc` (won't auto-edit your dotfile). The bigger of the two perf wins.
+- Drop `-l` from default_prog — **PATH gate PASSED on this machine** (claude/node/git/base64 all
+  resolve in a bare shell), so it's safe for you specifically via a settings.lua override.
+  Kept `-l` in the shipped template (safe default for unknown machines).
 - WezTerm version bump; mouse-click picker; macOS hardware tests.
