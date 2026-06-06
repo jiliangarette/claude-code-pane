@@ -18,7 +18,7 @@ items=(
 "  Ctrl+Shift + Z     zoom a pane fullscreen (toggle)"
 ""
 "CLAUDE"
-"  (auto-launches in grid panes — toggle in settings.lua)"
+"  (on demand by default — set auto_launch_claude in settings.lua)"
 "  Ctrl+A then C      launch Claude in the focused pane"
 "  Ctrl+Shift + B     broadcast a line to ALL panes"
 ""

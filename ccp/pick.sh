@@ -61,7 +61,7 @@ render() {
   local rows=$(( (n + cols - 1) / cols ))
   local left=$(( (COLS - cols * cellw) / 2 )); (( left < 0 )) && left=0
   vpad $(( rows + 6 ))
-  hcenter "${AC}${BD}CCP${RS}   ${DM}select projects — press a letter to toggle${RS}"
+  hcenter "${AC}${BD}P A N E S${RS}   ${DM}select projects — press a letter to toggle${RS}"
   echo
   local r c idx lt name mark
   for ((r=0; r<rows; r++)); do

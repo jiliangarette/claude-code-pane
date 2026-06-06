@@ -21,7 +21,7 @@ local DEFAULTS = {
 }
 local ok_user, user = pcall(require, 'settings')
 if not ok_user or type(user) ~= 'table' then
-  wezterm.log_error('CCP: settings.lua failed, using defaults -> ' .. tostring(user))
+  wezterm.log_error('Panes: settings.lua failed, using defaults -> ' .. tostring(user))
   user = {}
 end
 for k, v in pairs(DEFAULTS) do if user[k] == nil then user[k] = v end end
@@ -125,7 +125,7 @@ local function build_grid(win, keep, n, want_claude, projlist)
   if #result < n then
     pcall(function() win:toast_notification('Panes', 'Window too small — opened ' .. #result .. ' of ' .. n .. ' panes', nil, 2500) end)
   end
-  wezterm.log_info('CCP built ' .. #result .. ' panes (requested ' .. n .. ', claude=' .. tostring(want_claude) .. ')')
+  wezterm.log_info('Panes built ' .. #result .. ' panes (requested ' .. n .. ', claude=' .. tostring(want_claude) .. ')')
   pcall(function() win:toast_notification('Panes', 'Opened ' .. #result .. ' pane(s)', nil, 1500) end)
   for k, p in ipairs(result) do
     local proj = (projlist and projlist[k] and norm(projlist[k])) or project_for(k)

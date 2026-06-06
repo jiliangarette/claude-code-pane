@@ -15,7 +15,7 @@ Copy-Item (Join-Path $root 'wezterm\wezterm.lua') (Join-Path $wtDir 'wezterm.lua
 $settingsDst = Join-Path $wtDir 'settings.lua'
 if (-not (Test-Path $settingsDst)) {
   Copy-Item (Join-Path $root 'wezterm\settings.lua') $settingsDst
-  Write-Host "Installed settings.lua (edit it to add your projects)."
+  Write-Host "Installed settings.lua (optional tuning; first launch will ask for your projects folder)."
 } else {
   Write-Host "Kept your existing settings.lua."
 }
@@ -63,4 +63,4 @@ if ($gui) {
 }
 
 Write-Host ""
-Write-Host "Done. Launch Panes, then edit ~/.config/wezterm/settings.lua to add your projects."
+Write-Host "Done. Launch Panes — it will ask for your projects folder on first run. (Change it later with Ctrl+A then S.)"
