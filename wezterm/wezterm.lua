@@ -8,7 +8,7 @@ local config = wezterm.config_builder()
 
 local HOME = (os.getenv('USERPROFILE') or os.getenv('HOME') or 'C:/Users/Public'):gsub('\\', '/')
 local CCP = HOME .. '/.config/ccp'
-local SELFTEST_PICK = false -- testing only: runs picker + simulates a,b,Enter at startup
+local FORCE_ONBOARD = false -- testing only: forces the first-run onboarding screen
 
 -- ---------------------------------------------------------------------------
 -- settings (error-isolated: a bad settings.lua never bricks CCP)
@@ -32,10 +32,60 @@ pcall(function() wezterm.add_to_config_reload_watch_list(wezterm.config_dir .. '
 -- ---------------------------------------------------------------------------
 local function norm(p) return ((p or ''):gsub('\\', '/')) end
 
+local ROOTS_FILE = CCP .. '/roots.txt'
+
+local function read_lines(path)
+  local out = {}
+  local f = io.open(path, 'r')
+  if not f then return out end
+  for line in f:lines() do
+    line = norm((line:gsub('%s+$', '')))
+    if line ~= '' then out[#out + 1] = line end
+  end
+  f:close()
+  return out
+end
+
+-- folders to scan for projects: the user's roots.txt wins, else settings.scan_roots.
+local function get_roots()
+  local r = read_lines(ROOTS_FILE)
+  if #r > 0 then return r end
+  return user.scan_roots or {}
+end
+
+-- every project folder discovered under the roots (deduped by name).
+local function discovered_projects()
+  local out, seen = {}, {}
+  for _, root in ipairs(get_roots()) do
+    local ok, paths = pcall(wezterm.glob, root .. '/*')
+    if ok and paths then
+      for _, p in ipairs(paths) do
+        p = norm(p)
+        local key = p:lower()
+        if not seen[key] then seen[key] = true; out[#out + 1] = p end
+      end
+    end
+  end
+  return out
+end
+
+-- has the user pointed Panes at any real projects yet?
+local function is_configured()
+  if user.projects and #user.projects > 0 then return true end
+  if #read_lines(ROOTS_FILE) > 0 then return true end
+  for _, root in ipairs(user.scan_roots or {}) do
+    local ok, paths = pcall(wezterm.glob, root .. '/*')
+    if ok and paths and #paths > 0 then return true end
+  end
+  return false
+end
+
 local function project_for(i)
   local list = user.projects
-  if not list or #list == 0 then return HOME end
-  return norm(list[((i - 1) % #list) + 1])
+  if list and #list > 0 then return norm(list[((i - 1) % #list) + 1]) end
+  local disc = discovered_projects()
+  if #disc > 0 then return disc[((i - 1) % #disc) + 1] end
+  return HOME
 end
 
 local function split_into(first, n)
@@ -114,7 +164,7 @@ local function run_picker(pane)
   local parts = { 'clear; bash', CCP .. '/pick.sh', '--order' }
   for _, o in ipairs(user.project_order or {}) do parts[#parts + 1] = "'" .. o .. "'" end
   parts[#parts + 1] = '--roots'
-  for _, r in ipairs(user.scan_roots or {}) do parts[#parts + 1] = "'" .. r .. "'" end
+  for _, r in ipairs(get_roots()) do parts[#parts + 1] = "'" .. r .. "'" end
   pcall(function() pane:send_text(table.concat(parts, ' ') .. '\r') end)
 end
 
@@ -122,6 +172,16 @@ local function start_launcher(pane)
   wezterm.time.call_after(0.35, function()
     pcall(function() pane:send_text('clear; bash ' .. CCP .. '/launch.sh\r') end)
   end)
+end
+
+local function start_onboard(pane)
+  wezterm.time.call_after(0.35, function()
+    pcall(function() pane:send_text('clear; bash ' .. CCP .. '/onboard.sh\r') end)
+  end)
+  if FORCE_ONBOARD then
+    wezterm.time.call_after(2.2, function() pcall(function() pane:send_text(HOME .. '/projects\r') end) end)
+    wezterm.time.call_after(5.5, function() pcall(function() pane:send_text('ab\r') end) end)
+  end
 end
 
 -- ---------------------------------------------------------------------------
@@ -201,14 +261,13 @@ end)
 -- startup + launcher wiring
 -- ---------------------------------------------------------------------------
 wezterm.on('gui-startup', function()
-  if not user.show_chooser then return end
   local tab, pane, mwin = mux.spawn_window { cwd = project_for(1) }
   pcall(function() mwin:gui_window():maximize() end)
-  if SELFTEST_PICK then
-    run_picker(pane)
-    wezterm.time.call_after(2.6, function() pcall(function() pane:send_text('ab\r') end) end)
+  if FORCE_ONBOARD or not is_configured() then
+    start_onboard(pane) -- first run: ask where your projects live, then open the picker
     return
   end
+  if not user.show_chooser then return end
   start_launcher(pane)
 end)
 
@@ -288,6 +347,13 @@ config.keys = {
     action = wezterm.action_callback(function(win, pane)
       local _, np = win:mux_window():spawn_tab { cwd = project_for(1) }
       wezterm.time.call_after(0.3, function() run_picker(np) end)
+    end),
+  },
+  {
+    key = 's', mods = 'LEADER',
+    action = wezterm.action_callback(function(win, pane)
+      local _, np = win:mux_window():spawn_tab { cwd = HOME }
+      wezterm.time.call_after(0.3, function() pcall(function() np:send_text('clear; bash ' .. CCP .. '/onboard.sh\r') end) end)
     end),
   },
   { key = 'w', mods = 'LEADER', action = act.ShowLauncherArgs { flags = 'FUZZY|WORKSPACES' } },

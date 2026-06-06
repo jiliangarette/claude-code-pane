@@ -34,7 +34,10 @@ cd claude-code-pane
 powershell -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
-Then edit `~/.config/wezterm/settings.lua` to add your projects.
+On first launch Panes asks for your projects folder and saves it — no config
+editing needed. (Change it later with `Ctrl+A` then `S`, or edit
+`~/.config/wezterm/settings.lua`.)
+
 Requires [Git for Windows](https://git-scm.com/download/win),
 [WezTerm](https://wezterm.org/install/windows.html), and
 [Claude Code](https://docs.claude.com/en/docs/claude-code) on your PATH.

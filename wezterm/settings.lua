@@ -1,7 +1,10 @@
 -- Panes :: SETTINGS
 -- This is the only file you edit. Change VALUES only, then press Ctrl+Shift+R
 -- (or relaunch). A bad edit here falls back to safe defaults and is logged —
--- it will NOT break CCP.
+-- it will NOT break Panes.
+--
+-- First launch: if you leave projects/scan_roots unset, Panes asks for your
+-- projects folder on screen and saves it. Change it anytime with Ctrl+A then S.
 
 local HOME = (os.getenv('USERPROFILE') or os.getenv('HOME') or 'C:/Users/Public'):gsub('\\', '/')
 
