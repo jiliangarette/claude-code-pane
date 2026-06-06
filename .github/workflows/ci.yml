@@ -1,0 +1,74 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  shell:
+    name: shellcheck + bash -n
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Syntax check (bash -n)
+        run: |
+          set -e
+          for f in ccp/*.sh; do
+            echo "bash -n $f"
+            bash -n "$f"
+          done
+
+      - name: shellcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+          # SC1090/SC1091: dynamic `source ~/.config/ccp/ui.sh` can't be followed at lint time.
+          shellcheck -S warning -e SC1090,SC1091 ccp/*.sh
+
+  wezterm:
+    name: validate wezterm config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install WezTerm (stable .deb)
+        run: |
+          set -euo pipefail
+          curl -fsSL https://apt.fury.io/wez/gpg.key \
+            | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
+          echo "deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *" \
+            | sudo tee /etc/apt/sources.list.d/wezterm.list
+          sudo apt-get update
+          sudo apt-get install -y wezterm
+          wezterm --version
+
+      - name: show-keys (parses + executes the full config)
+        run: |
+          set -euo pipefail
+          # --config-file puts wezterm/ on the Lua require path, so `require 'settings'`
+          # resolves to the template settings.lua next to wezterm.lua.
+          wezterm --config-file "$GITHUB_WORKSPACE/wezterm/wezterm.lua" show-keys \
+            > keys.txt 2> err.txt || { echo "::error::wezterm failed to load config"; cat err.txt; exit 1; }
+          if [ -s err.txt ]; then
+            echo "::error::wezterm emitted errors while loading the config"
+            cat err.txt
+            exit 1
+          fi
+
+      - name: Assert custom bindings actually loaded (not defaults)
+        run: |
+          set -euo pipefail
+          # Proves our config ran rather than wezterm silently falling back to defaults.
+          grep -q 'Leader: Physical(A) CTRL' keys.txt || { echo "::error::leader key missing"; exit 1; }
+          grep -q 'LEADER .* c .* SendString("claude' keys.txt || { echo "::error::Ctrl+A then C (claude) binding missing"; exit 1; }
+          echo "wezterm config validated:"
+          grep -E 'Leader:|LEADER +(c|x|w) ' keys.txt
