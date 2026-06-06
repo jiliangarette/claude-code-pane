@@ -134,11 +134,11 @@ end
 
 local function build_grid(win, keep, n, want_claude, projlist)
   local result = split_into(keep, n)
-  if #result < n then
-    pcall(function() win:toast_notification('Panes', 'Window too small — opened ' .. #result .. ' of ' .. n .. ' panes', nil, 2500) end)
-  end
+  local short = #result < n
   wezterm.log_info('Panes built ' .. #result .. ' panes (requested ' .. n .. ', claude=' .. tostring(want_claude) .. ')')
-  pcall(function() win:toast_notification('Panes', 'Opened ' .. #result .. ' pane(s)', nil, 1500) end)
+  local msg = short and ('Window too small — opened ' .. #result .. ' of ' .. n .. ' panes')
+    or ('Opened ' .. #result .. ' pane(s)')
+  pcall(function() win:toast_notification('Panes', msg, nil, short and 2500 or 1500) end)
   for k, p in ipairs(result) do
     local proj = (projlist and projlist[k] and norm(projlist[k])) or project_for(k)
     wezterm.time.call_after(0.05 * (k - 1) + 0.30, function()
@@ -173,7 +173,7 @@ end
 
 -- run the centered project picker (pick.sh) in the given pane; it emits ccp_picked.
 local function run_picker(pane)
-  local parts = { 'clear; bash', CCP .. '/pick.sh', '--order' }
+  local parts = { 'bash', CCP .. '/pick.sh', '--order' }
   for _, o in ipairs(user.project_order or {}) do parts[#parts + 1] = "'" .. o .. "'" end
   parts[#parts + 1] = '--roots'
   for _, r in ipairs(get_roots()) do parts[#parts + 1] = "'" .. r .. "'" end

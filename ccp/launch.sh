@@ -29,7 +29,7 @@ while true; do
     0) key="0"; break ;;
     [1-9]) key="$k"; break ;;
     ""|$'\r'|$'\n') key="4"; break ;;
-    q|Q) key="1"; break ;;
+    q|Q|$'\033') show_cursor; clear; exec "${SHELL:-bash}" -i ;;
   esac
 done
 
