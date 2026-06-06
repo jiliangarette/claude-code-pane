@@ -1,6 +1,5 @@
--- CCP — Claude Code Pane
--- A minimalist, performance-first multi-pane cockpit for Claude Code on
--- native Windows + Git Bash. Edit settings.lua, not this file.
+-- Panes — a minimalist, performance-first multi-pane cockpit for Claude Code
+-- on native Windows + Git Bash. Edit settings.lua, not this file.
 
 local wezterm = require 'wezterm'
 local act = wezterm.action
@@ -74,10 +73,10 @@ end
 local function build_grid(win, keep, n, want_claude, projlist)
   local result = split_into(keep, n)
   if #result < n then
-    pcall(function() win:toast_notification('CCP', 'Window too small — opened ' .. #result .. ' of ' .. n .. ' panes', nil, 2500) end)
+    pcall(function() win:toast_notification('Panes', 'Window too small — opened ' .. #result .. ' of ' .. n .. ' panes', nil, 2500) end)
   end
   wezterm.log_info('CCP built ' .. #result .. ' panes (requested ' .. n .. ', claude=' .. tostring(want_claude) .. ')')
-  pcall(function() win:toast_notification('CCP', 'Opened ' .. #result .. ' pane(s)', nil, 1500) end)
+  pcall(function() win:toast_notification('Panes', 'Opened ' .. #result .. ' pane(s)', nil, 1500) end)
   for k, p in ipairs(result) do
     local proj = (projlist and projlist[k] and norm(projlist[k])) or project_for(k)
     wezterm.time.call_after(0.15, function()
@@ -172,7 +171,7 @@ config.colors = {
 -- ---------------------------------------------------------------------------
 -- title / status
 -- ---------------------------------------------------------------------------
-wezterm.on('format-window-title', function() return 'CCP - Claude Code Pane' end)
+wezterm.on('format-window-title', function() return 'Panes' end)
 
 wezterm.on('format-tab-title', function(tab)
   local t = tab.tab_title
@@ -194,7 +193,7 @@ wezterm.on('format-tab-title', function(tab)
 end)
 
 wezterm.on('update-status', function(window)
-  local txt = window:leader_is_active() and ' LEADER ' or (' ⬓ CCP · ' .. window:active_workspace() .. ' ')
+  local txt = window:leader_is_active() and ' LEADER ' or (' ⬓ Panes · ' .. window:active_workspace() .. ' ')
   window:set_left_status(wezterm.format { { Foreground = { Color = '#56b6c2' } }, { Text = txt } })
 end)
 

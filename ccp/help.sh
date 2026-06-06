@@ -37,7 +37,7 @@ for it in "${items[@]}"; do (( ${#it} > maxw )) && maxw=${#it}; done
 margin=$(( (COLS - maxw) / 2 )); (( margin < 0 )) && margin=0
 
 vpad $(( ${#items[@]} + 4 ))
-hcenter "${AC}${BD}CCP  //  Claude Code Pane${RS}"
+hcenter "${AC}${BD}P A N E S${RS}"
 hcenter "${DM}────────────────────────────────${RS}"
 echo
 for it in "${items[@]}"; do

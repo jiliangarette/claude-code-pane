@@ -1,4 +1,4 @@
--- CCP — Claude Code Pane :: SETTINGS
+-- Panes :: SETTINGS
 -- This is the only file you edit. Change VALUES only, then press Ctrl+Shift+R
 -- (or relaunch). A bad edit here falls back to safe defaults and is logged —
 -- it will NOT break CCP.

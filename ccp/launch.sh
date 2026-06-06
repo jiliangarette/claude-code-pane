@@ -13,7 +13,7 @@ top=""; mid=""; bot=""
 for n in "${nums[@]}"; do top+="┌───┐ "; mid+="│ $n │ "; bot+="└───┘ "; done
 
 vpad 10
-hcenter "${AC}${BD}c c p${RS}   ${DM}claude code pane${RS}"
+hcenter "${AC}${BD}P A N E S${RS}"
 echo
 hcenter "${AC}${top}${RS}"
 hcenter "${AC}${mid}${RS}"

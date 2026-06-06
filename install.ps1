@@ -1,4 +1,4 @@
-# CCP — Claude Code Pane :: installer (Windows PowerShell 5.1+)
+# Panes :: installer (Windows PowerShell 5.1+)
 # Copies the config + scripts into place, generates the icon, and creates a
 # Desktop shortcut if it can find wezterm-gui.exe. Never overwrites your settings.lua.
 
@@ -27,7 +27,7 @@ Write-Host "Installed scripts to $ccpDir"
 # icon
 try {
   powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $ccpDir 'make-icon.ps1') | Out-Null
-  Write-Host "Generated CCP.ico"
+  Write-Host "Generated icon"
 } catch { Write-Warning "Icon generation skipped: $_" }
 
 # locate wezterm-gui.exe
@@ -50,17 +50,17 @@ if (-not $gui) {
 if ($gui) {
   $desktop = [Environment]::GetFolderPath('Desktop')
   $ws = New-Object -ComObject WScript.Shell
-  $lnk = $ws.CreateShortcut((Join-Path $desktop 'CCP.lnk'))
+  $lnk = $ws.CreateShortcut((Join-Path $desktop 'Panes.lnk'))
   $lnk.TargetPath = $gui
   $lnk.WorkingDirectory = $home_
   $ico = Join-Path $ccpDir 'CCP.ico'
   if (Test-Path $ico) { $lnk.IconLocation = "$ico,0" }
-  $lnk.Description = 'CCP - Claude Code Pane'
+  $lnk.Description = 'Panes'
   $lnk.Save()
-  Write-Host "Created Desktop shortcut: CCP -> $gui"
+  Write-Host "Created Desktop shortcut: Panes -> $gui"
 } else {
   Write-Warning "wezterm-gui.exe not found. Install WezTerm (https://wezterm.org/install/windows.html), then re-run this installer, or launch wezterm-gui.exe directly."
 }
 
 Write-Host ""
-Write-Host "Done. Launch CCP, then edit ~/.config/wezterm/settings.lua to add your projects."
+Write-Host "Done. Launch Panes, then edit ~/.config/wezterm/settings.lua to add your projects."
