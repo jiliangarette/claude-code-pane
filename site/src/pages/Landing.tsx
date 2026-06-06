@@ -1,4 +1,4 @@
-import { motion } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
 import { Reveal } from '../components/Reveal'
 import { Eyebrow, KeyChip, Button, CopyButton, TerminalWindow, Pill } from '../components/ui'
 import { HeroTerminalGrid } from '../components/HeroTerminalGrid'
@@ -37,7 +37,9 @@ const STEPS: [string, string, string[]][] = [
   ['03 — Run Claude', 'Ctrl+A C', ['Drop into any pane and start Claude with Ctrl+A C,', 'broadcast a prompt to all panes with Ctrl+Shift+B,', 'or set auto_launch_claude and have it ready everywhere.']],
 ]
 
-export const Landing = () => (
+export const Landing = () => {
+  const reduce = useReducedMotion()
+  return (
   <>
     {/* Hero */}
     <Section className="!py-16 md:!py-24">
@@ -78,7 +80,20 @@ export const Landing = () => (
           </Reveal>
         </div>
         <motion.div initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}>
-          <HeroTerminalGrid />
+          {reduce ? (
+            <HeroTerminalGrid />
+          ) : (
+            <TerminalWindow title="panes — demo">
+              <img
+                src="/panes.gif"
+                alt="Panes: choose a layout, get a grid of Claude Code panes"
+                loading="lazy"
+                width={760}
+                height={428}
+                className="w-full rounded-md"
+              />
+            </TerminalWindow>
+          )}
         </motion.div>
       </div>
     </Section>
@@ -263,4 +278,5 @@ export const Landing = () => (
       </Reveal>
     </Section>
   </>
-)
+  )
+}

@@ -16,25 +16,32 @@ const SETTINGS: [string, string, string, string][] = [
   ['claude_command', 'string', "'claude'", 'Command used to start Claude in a pane.'],
   ['projects', 'list (ordered)', '{}', 'Project paths mapped onto grid panes in order (cycled). Empty = open panes in home.'],
   ['project_order', 'list', '{}', 'Preferred order for the project picker; the rest follow A–Z.'],
-  ['scan_roots', 'list', "{ HOME..'/projects' }", 'Folders scanned by the picker (press 0, or Ctrl+A then O).'],
-  ['default_prog', 'program spec', "{ 'C:/Program Files/Git/bin/bash.exe', '-l', '-i' }", 'Default shell for every pane.'],
+  ['scan_roots', 'list', "{ HOME..'/projects' }", 'Folders scanned by the picker (press 0, or Ctrl+A then O). First-run onboarding writes ~/.config/ccp/roots.txt, which overrides this.'],
+  ['default_prog', 'program spec | nil', 'nil', 'Default shell for every pane. Leave nil to auto-detect — Git Bash on Windows, bash on macOS/Linux.'],
 ]
 
 const KEYS: [string, string][] = [
   ['Pick grid size / open picker', '1 2 4 6 8 9 / 0'],
   ['Reshape current tab into N panes', 'Ctrl+1 … Ctrl+9'],
   ['New tab · switch tab', 'Ctrl+T · Ctrl+Tab'],
+  ['Close current tab', 'Ctrl+X'],
   ['Launch Claude in current pane', 'Ctrl+A then C'],
-  ['Open project picker', 'Ctrl+A then O'],
+  ['Open project picker', 'Ctrl+A then O (or P)'],
   ['Broadcast a line to all panes', 'Ctrl+Shift+B'],
   ['Zoom / unzoom current pane', 'Ctrl+Shift+Z'],
   ['Jump to pane by number', 'Alt+1 … Alt+9'],
+  ['Pane-select overlay (jump)', 'Ctrl+A then F'],
   ['Move to adjacent pane', 'Ctrl+← → ↑ ↓'],
+  ['Close current pane', 'Ctrl+A then X'],
+  ['Rename current tab', 'Ctrl+A then R'],
+  ['Change projects folder (re-onboard)', 'Ctrl+A then S'],
+  ['Workspace switcher', 'Ctrl+A then W'],
   ['Toggle in-place help', 'Ctrl+H'],
   ['Reload config', 'Ctrl+Shift+R'],
 ]
 
 const USAGE: [string, string][] = [
+  ['First run', 'If no projects/scan_roots are configured, Panes shows an onboarding screen asking for your projects folder and saves it to ~/.config/ccp/roots.txt. Re-run it anytime with Ctrl+A then S.'],
   ['The launcher', 'A centered launcher appears (show_chooser = true). Pick a count for a balanced grid filled from projects in order, or press 0 for the picker.'],
   ['The project picker', '0 at the launcher (or Ctrl+A then O) scans scan_roots, orders by project_order then A–Z, and opens a balanced grid — one pane per chosen project.'],
   ['Reshape', 'Ctrl+1..9 re-tiles the current tab into N balanced panes. Per-tab, so tabs can hold different layouts.'],
@@ -49,7 +56,7 @@ const FAQ: [string, string][] = [
   ['Do I have to run Claude in every pane?', 'No. Panes are shells by default. Ctrl+A C per-pane, or auto_launch_claude = true for everywhere.'],
   ['Will installing overwrite my settings?', 'No. Installer and manual steps never clobber an existing settings.lua.'],
   ['Why doesn’t my config change apply?', 'No hot-reload. Press Ctrl+Shift+R or relaunch; check for syntax errors in the logs.'],
-  ['Does Panes work on macOS or Linux?', 'It targets native Windows + Git Bash on WezTerm. That’s the supported environment.'],
+  ['Does Panes work on macOS or Linux?', 'Yes — the shell auto-detects (Git Bash on Windows, bash on macOS/Linux) and the scripts are bash 3.2-clean. Run bash install.sh instead of install.ps1. It is built and daily-driven on Windows + Git Bash; macOS/Linux are supported but less battle-tested, so issues and PRs are welcome.'],
   ['How do I run the same command across all projects?', 'Broadcast with Ctrl+Shift+B.'],
 ]
 
@@ -98,7 +105,8 @@ export const Docs = () => (
           <div><span className="text-accent">$</span> cd claude-code-pane</div>
           <div><span className="text-accent">$</span> powershell -ExecutionPolicy Bypass -File .\install.ps1</div>
         </TerminalWindow>
-        <P>The installer copies wezterm.lua to ~/.config/wezterm, installs settings.lua only if missing (never clobbers yours), copies scripts to ~/.config/ccp, generates the icon, and creates a Panes Desktop shortcut. Then edit ~/.config/wezterm/settings.lua to add your projects.</P>
+        <P>The installer copies wezterm.lua to ~/.config/wezterm, installs settings.lua only if missing (never clobbers yours), copies scripts to ~/.config/ccp, generates the icon, and creates a Panes Desktop shortcut.</P>
+        <P>On first launch Panes asks for your projects folder on screen and saves it to ~/.config/ccp/roots.txt — no config editing required. Change it anytime with Ctrl+A then S, or set projects and scan_roots in settings.lua for full control.</P>
       </section>
 
       <section className="mt-12 space-y-3"><H id="settings">settings.lua reference</H>
@@ -123,7 +131,7 @@ export const Docs = () => (
       </section>
 
       <section className="mt-12 space-y-3"><H id="keybindings">Keybindings</H>
-        <P>Ctrl+A is the leader for Claude actions. "Then C" means press Ctrl+A, release, then C.</P>
+        <P>Ctrl+A is the leader key. "Then C" means press Ctrl+A, release, then C. It chords into Claude, the project picker, tab rename, onboarding, and more.</P>
         <div className="mt-4 divide-y divide-line rounded-[10px] border border-line">
           {KEYS.map(([action, keys]) => (
             <div key={action} className="flex items-center justify-between gap-4 p-3">

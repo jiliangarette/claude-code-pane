@@ -17,8 +17,8 @@ const STEPS: [string, string | null, string][] = [
   ['Install Claude Code', 'npm install -g @anthropic-ai/claude-code\nclaude --version', 'So claude is on your PATH.'],
   ['Clone Panes', 'git clone https://github.com/jiliangarette/claude-code-pane.git\ncd claude-code-pane', 'Grab the repo.'],
   ['Run the installer', 'powershell -ExecutionPolicy Bypass -File .\\install.ps1', 'Copies config + scripts, generates the icon, makes a Desktop shortcut. Never clobbers an existing settings.lua.'],
-  ['Add your projects', null, 'Open ~/.config/wezterm/settings.lua and set projects and scan_roots (and auto_launch_claude to taste). Reload with Ctrl+Shift+R or relaunch.'],
-  ['Launch', null, 'Open Panes from the Desktop shortcut. The centered chooser appears — pick a grid size or press 0 to choose projects.'],
+  ['Launch', null, 'Open Panes from the Desktop shortcut. On first run it asks for your projects folder and saves it — no config editing needed. Then the centered chooser appears: pick a grid size or press 0 to choose projects.'],
+  ['Tune it (optional)', null, 'Change the folder later with Ctrl+A then S, or open ~/.config/wezterm/settings.lua to set projects, scan_roots, and auto_launch_claude. Reload with Ctrl+Shift+R.'],
 ]
 
 const TROUBLE = [
@@ -33,7 +33,7 @@ export const Install = () => (
     <Section className="!pt-16 text-center">
       <Reveal><Eyebrow glyph="$" className="justify-center">install</Eyebrow></Reveal>
       <Reveal delay={0.05}><h1 className="mt-4 text-5xl font-bold tracking-tight sm:text-6xl">Install Panes</h1></Reveal>
-      <Reveal delay={0.1}><p className="mx-auto mt-4 max-w-md text-mut">Native Windows + Git Bash. Five minutes, one script.</p></Reveal>
+      <Reveal delay={0.1}><p className="mx-auto mt-4 max-w-md text-mut">Windows, macOS, or Linux. Five minutes, one script.</p></Reveal>
     </Section>
 
     <Section>
@@ -72,6 +72,30 @@ export const Install = () => (
           </Reveal>
         ))}
       </div>
+    </Section>
+
+    <Section>
+      <Reveal><Eyebrow glyph="$">macOS &amp; Linux</Eyebrow></Reveal>
+      <Reveal delay={0.05}><h2 className="mt-3 text-2xl font-bold">Not on Windows?</h2></Reveal>
+      <Reveal delay={0.1}>
+        <p className="mt-3 text-mut">
+          The shell auto-detects and the scripts are bash 3.2-clean, so Panes runs on macOS and
+          Linux too. Install WezTerm and bash (e.g. <code className="font-mono text-ink">brew install --cask wezterm</code> on macOS),
+          then clone and run the shell installer.
+        </p>
+      </Reveal>
+      <Reveal delay={0.12}>
+        <TerminalWindow title="bash" className="mt-5" copy={'git clone https://github.com/jiliangarette/claude-code-pane.git\ncd claude-code-pane\nbash install.sh'}>
+          <div><span className="text-accent">$</span> git clone https://github.com/jiliangarette/claude-code-pane.git</div>
+          <div><span className="text-accent">$</span> cd claude-code-pane</div>
+          <div><span className="text-accent">$</span> bash install.sh</div>
+        </TerminalWindow>
+      </Reveal>
+      <Reveal delay={0.14}>
+        <p className="mt-3 text-sm text-faint">
+          Built and daily-driven on Windows; macOS and Linux are supported but less battle-tested — issues and PRs welcome.
+        </p>
+      </Reveal>
     </Section>
 
     <Section>

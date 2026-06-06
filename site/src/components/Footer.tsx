@@ -29,7 +29,7 @@ export const Footer = () => (
           <span className="font-display font-bold text-ink">Panes</span>
         </div>
         <p className="mt-3 max-w-xs text-sm text-muted">
-          A minimalist Claude Code cockpit for Windows. Free &amp; open source — no login, runs entirely on your machine.
+          A minimalist Claude Code cockpit for Windows, macOS &amp; Linux. Free &amp; open source — no login, runs entirely on your machine.
         </p>
       </div>
       <Col title="Product" links={[['Features', '/#features'], ['Docs', '/docs'], ['Install', '/install'], ['Handoff', '/handoff']]} />

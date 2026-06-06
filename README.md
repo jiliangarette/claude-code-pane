@@ -28,19 +28,30 @@ are cheap shells, and Claude launches exactly where you want it.
 
 ## Install
 
+**Windows** (PowerShell):
+
 ```powershell
 git clone https://github.com/jiliangarette/claude-code-pane.git
 cd claude-code-pane
 powershell -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
-On first launch Panes asks for your projects folder and saves it — no config
-editing needed. (Change it later with `Ctrl+A` then `S`, or edit
-`~/.config/wezterm/settings.lua`.)
+**macOS / Linux** (bash):
 
-Requires [Git for Windows](https://git-scm.com/download/win),
-[WezTerm](https://wezterm.org/install/windows.html), and
-[Claude Code](https://docs.claude.com/en/docs/claude-code) on your PATH.
+```bash
+git clone https://github.com/jiliangarette/claude-code-pane.git
+cd claude-code-pane
+bash install.sh
+```
+
+On first launch Panes asks for your projects folder and saves it to
+`~/.config/ccp/roots.txt` — no config editing needed. (Change it later with
+`Ctrl+A` then `S`, or edit `~/.config/wezterm/settings.lua`.)
+
+Requires [WezTerm](https://wezterm.org), bash (via
+[Git for Windows](https://git-scm.com/download/win) on Windows; built-in on
+macOS/Linux), and [Claude Code](https://docs.claude.com/en/docs/claude-code) on
+your PATH.
 
 ## Install with Claude Code (handoff)
 
@@ -65,9 +76,11 @@ Don't want to do it by hand? Paste this to Claude Code and let it set everything
 |--|--|
 | launcher `1-9` / `0` | open N panes / pick projects |
 | `Ctrl+1..9` | reshape tab into N panes |
-| `Ctrl+T` · `Ctrl+Tab` | new tab · switch tab |
+| `Ctrl+T` · `Ctrl+Tab` · `Ctrl+X` | new tab · switch tab · close tab |
 | `Ctrl+Arrows` · `Alt+1..9` | move · jump panes |
 | `Ctrl+A` then `C` | launch Claude in pane |
+| `Ctrl+A` then `O` / `F` | pick projects · pane-select (jump) |
+| `Ctrl+A` then `S` / `R` / `X` | change projects folder · rename tab · close pane |
 | `Ctrl+Shift+B` · `Ctrl+Shift+Z` | broadcast · zoom |
 | `Ctrl+H` | help |
 

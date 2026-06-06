@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 export const Eyebrow = ({ children, glyph = '>', className = '' }: { children: ReactNode; glyph?: string; className?: string }) => (
   <div className={`inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.16em] ${className}`}>
-    <span className="text-accent">{glyph}</span>
+    <span className="text-accent" aria-hidden="true">{glyph}</span>
     <span className="text-mut">{children}</span>
   </div>
 )
@@ -29,7 +29,7 @@ export const CopyButton = ({ text, className = '' }: { text: string; className?:
     <button
       onClick={copy}
       aria-label="Copy to clipboard"
-      className={`inline-flex items-center gap-1.5 rounded-md border border-line px-2.5 py-1 font-mono text-[11px] text-mut transition hover:border-accent/50 hover:text-accent ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-md border border-line px-2.5 py-1 font-mono text-[11px] text-mut transition hover:border-accent/50 hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-base ${className}`}
     >
       {done ? '✓ copied' : 'copy'}
     </button>
@@ -38,7 +38,7 @@ export const CopyButton = ({ text, className = '' }: { text: string; className?:
 
 type BtnProps = { to?: string; href?: string; children: ReactNode; variant?: 'primary' | 'ghost' | 'violet'; className?: string }
 export const Button = ({ to, href, children, variant = 'primary', className = '' }: BtnProps) => {
-  const base = 'inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium transition active:scale-[0.98]'
+  const base = 'inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-base'
   const styles =
     variant === 'primary'
       ? 'bg-accent text-[#06181b] hover:bg-accent-bright glow-btn'
@@ -73,9 +73,9 @@ export const TerminalWindow = ({
     } ${className}`}
   >
     <div className="flex items-center gap-2 border-b border-line bg-inset/80 px-4 py-2.5">
-      <span className="h-2.5 w-2.5 rounded-full bg-accent/60" />
-      <span className="h-2.5 w-2.5 rounded-full bg-amber/60" />
-      <span className="h-2.5 w-2.5 rounded-full bg-violet/60" />
+      <span className="h-2.5 w-2.5 rounded-full bg-accent/60" aria-hidden="true" />
+      <span className="h-2.5 w-2.5 rounded-full bg-amber/60" aria-hidden="true" />
+      <span className="h-2.5 w-2.5 rounded-full bg-violet/60" aria-hidden="true" />
       <span className="ml-2 font-mono text-xs text-muted">{title}</span>
       {copy && <span className="ml-auto"><CopyButton text={copy} /></span>}
     </div>
