@@ -39,6 +39,7 @@ return {
     HOME .. '/projects',
   },
 
-  -- Default shell for every pane (Git Bash on Windows).
-  default_prog = { 'C:/Program Files/Git/bin/bash.exe', '-l', '-i' },
+  -- Default shell. Leave nil to auto-detect (Windows -> Git Bash; macOS/Linux -> bash).
+  -- Uncomment to force: default_prog = { 'C:/Program Files/Git/bin/bash.exe', '-l', '-i' }.
+  default_prog = nil,
 }

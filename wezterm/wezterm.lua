@@ -6,9 +6,21 @@ local act = wezterm.action
 local mux = wezterm.mux
 local config = wezterm.config_builder()
 
-local HOME = (os.getenv('USERPROFILE') or os.getenv('HOME') or 'C:/Users/Public'):gsub('\\', '/')
+local triple = wezterm.target_triple
+local IS_WIN = triple:find('windows') ~= nil
+local HOME = ((IS_WIN and os.getenv('USERPROFILE')) or os.getenv('HOME') or (IS_WIN and 'C:/Users/Public' or '/tmp')):gsub('\\', '/')
 local CCP = HOME .. '/.config/ccp'
 local FORCE_ONBOARD = false -- testing only: forces the first-run onboarding screen
+
+-- default shell per OS (Windows -> Git Bash; macOS/Linux -> brew bash if present, else /bin/bash)
+local function default_shell()
+  if IS_WIN then return { 'C:/Program Files/Git/bin/bash.exe', '-l', '-i' } end
+  for _, p in ipairs({ '/opt/homebrew/bin/bash', '/usr/local/bin/bash' }) do
+    local f = io.open(p, 'r')
+    if f then f:close(); return { p, '-l', '-i' } end
+  end
+  return { '/bin/bash', '-l', '-i' }
+end
 
 -- ---------------------------------------------------------------------------
 -- settings (error-isolated: a bad settings.lua never bricks CCP)
@@ -17,7 +29,7 @@ local DEFAULTS = {
   front_end = 'OpenGL', max_fps = 60, show_chooser = true,
   auto_launch_claude = false, claude_command = 'claude',
   projects = {}, scan_roots = {}, project_order = {},
-  default_prog = { 'C:/Program Files/Git/bin/bash.exe', '-l', '-i' },
+  default_prog = default_shell(),
 }
 local ok_user, user = pcall(require, 'settings')
 if not ok_user or type(user) ~= 'table' then
@@ -322,7 +334,8 @@ config.keys = {
   {
     key = 'phys:H', mods = 'CTRL',
     action = wezterm.action_callback(function(win, pane)
-      local hp = pane:split { size = 0.5, args = { user.default_prog[1], '--noprofile', '--norc', CCP .. '/help.sh' } }
+      local bash = IS_WIN and user.default_prog[1] or 'bash'
+      local hp = pane:split { size = 0.5, args = { bash, '--noprofile', '--norc', CCP .. '/help.sh' } }
       wezterm.time.call_after(0.05, function() pcall(function() win:perform_action(act.TogglePaneZoomState, hp) end) end)
     end),
   },

@@ -13,15 +13,15 @@ for a in "$@"; do
   esac
 done
 
-declare -A seen
+seen=""
 names=(); paths=()
 addp() {
   local p="$1" b key
   [ -d "$p" ] || return
   b=$(basename "$p")
   key=$(printf '%s' "$b" | tr '[:upper:]' '[:lower:]')
-  [ -n "${seen[$key]}" ] && return
-  seen[$key]=1; names+=("$b"); paths+=("$p")
+  case "$seen" in *"|$key|"*) return ;; esac
+  seen="$seen|$key|"; names+=("$b"); paths+=("$p")
 }
 
 # priority order first (case-insensitive basename match), then the rest A-Z.
@@ -47,9 +47,10 @@ if [ "$n" -eq 0 ]; then printf 'no projects found\n'; sleep 1; exit 0; fi
 [ "$n" -gt 24 ] && n=24
 
 letters=(a b c d e f g h i j k l m n o p q r s t u v w x)
-declare -A sel
+sel=""
 selorder=()
 is_bal() { case " 1 2 4 6 8 9 " in *" $1 "*) return 0 ;; *) return 1 ;; esac; }
+is_sel() { case "$sel" in *"|$1|"*) return 0 ;; *) return 1 ;; esac; }
 
 render() {
   hide_cursor; printf '%s' "${ESC}[H"
@@ -69,7 +70,7 @@ render() {
       idx=$(( c * rows + r ))
       if (( idx < n )); then
         lt=${letters[idx]}; name="${names[idx]}"
-        if [ -n "${sel[$lt]}" ]; then mark="${AC}●${RS}"; else mark="${DM}○${RS}"; fi
+        if is_sel "$lt"; then mark="${AC}●${RS}"; else mark="${DM}○${RS}"; fi
         printf '%s %s%s%s %s%-*s%s   ' "$mark" "$AC" "$lt" "$RS" "$FG" "$maxw" "$name" "$RS"
       fi
     done
@@ -104,11 +105,11 @@ while true; do
   fi
   for ((i=0; i<n; i++)); do
     if [ "${letters[i]}" = "$k" ]; then
-      if [ -n "${sel[$k]}" ]; then
-        unset 'sel[$k]'
+      if is_sel "$k"; then
+        sel="${sel/|$k|/|}"
         tmp=(); for x in "${selorder[@]}"; do [ "$x" != "$i" ] && tmp+=("$x"); done; selorder=("${tmp[@]}")
       else
-        sel[$k]=1; selorder+=("$i")
+        sel="$sel|$k|"; selorder+=("$i")
       fi
       break
     fi
