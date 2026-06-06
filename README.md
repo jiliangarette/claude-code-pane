@@ -15,7 +15,7 @@ are cheap shells, and Claude launches exactly where you want it.
 <p align="center">
   <a href="https://github.com/jiliangarette/claude-code-pane/releases/download/v0.1.0/panes.mp4">▶ Watch the full video</a>
   ·
-  <a href="https://panes-jgarette0s-projects.vercel.app">Live site</a>
+  <a href="https://claude-code-pane.vercel.app">Live site</a>
 </p>
 
 ## What it does
