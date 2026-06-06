@@ -7,7 +7,7 @@ const link = ({ isActive }: { isActive: boolean }) =>
   isActive ? 'text-ink' : 'text-mut transition hover:text-ink'
 
 export const Nav = () => (
-  <header className="sticky top-0 z-50 border-b border-line/60 bg-base/70 backdrop-blur-xl">
+  <header className="sticky top-0 z-50 border-b border-line/60 bg-base/70 backdrop-blur-md">
     <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
       <Link to="/" className="flex items-center gap-2.5">
         <span className="text-accent"><Logo size={22} /></span>
