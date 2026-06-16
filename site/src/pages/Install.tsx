@@ -36,6 +36,25 @@ export const Install = () => (
       <Reveal delay={0.1}><p className="mx-auto mt-4 max-w-md text-mut">Windows, macOS, or Linux. Five minutes, one script.</p></Reveal>
     </Section>
 
+    <Section className="!pt-0">
+      <Reveal>
+        <div className="rounded-2xl border border-accent/30 bg-accent/[0.05] p-8 text-center">
+          <p className="text-mut">Skip the clone — grab the bundle, extract, and run the installer.</p>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+            <Button href="/panes.zip" download>Download panes.zip</Button>
+            <span className="font-mono text-xs text-faint">~19&nbsp;KB · configs + scripts + installers</span>
+          </div>
+          <div className="mt-5 inline-block text-left">
+            <TerminalWindow title="powershell" copy={'Expand-Archive panes.zip\ncd panes\npowershell -ExecutionPolicy Bypass -File .\\install.ps1'}>
+              <div><span className="text-accent">{'> '}</span>Expand-Archive panes.zip</div>
+              <div><span className="text-accent">{'> '}</span>cd panes</div>
+              <div><span className="text-accent">{'> '}</span>powershell -ExecutionPolicy Bypass -File .\install.ps1</div>
+            </TerminalWindow>
+          </div>
+        </div>
+      </Reveal>
+    </Section>
+
     <Section>
       <div className="grid gap-3 sm:grid-cols-3">
         {REQS.map(([t, d], i) => (

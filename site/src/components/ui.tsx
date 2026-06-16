@@ -36,8 +36,8 @@ export const CopyButton = ({ text, className = '' }: { text: string; className?:
   )
 }
 
-type BtnProps = { to?: string; href?: string; children: ReactNode; variant?: 'primary' | 'ghost' | 'violet'; className?: string }
-export const Button = ({ to, href, children, variant = 'primary', className = '' }: BtnProps) => {
+type BtnProps = { to?: string; href?: string; download?: boolean | string; children: ReactNode; variant?: 'primary' | 'ghost' | 'violet'; className?: string }
+export const Button = ({ to, href, download, children, variant = 'primary', className = '' }: BtnProps) => {
   const base = 'inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-base'
   const styles =
     variant === 'primary'
@@ -48,7 +48,7 @@ export const Button = ({ to, href, children, variant = 'primary', className = ''
   const cls = `${base} ${styles} ${className}`
   if (to) return <Link to={to} className={cls}>{children}</Link>
   return (
-    <a href={href} target={href?.startsWith('http') ? '_blank' : undefined} rel="noreferrer" className={cls}>
+    <a href={href} download={download} target={href?.startsWith('http') ? '_blank' : undefined} rel="noreferrer" className={cls}>
       {children}
     </a>
   )
