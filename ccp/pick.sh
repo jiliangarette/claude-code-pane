@@ -13,33 +13,52 @@ for a in "$@"; do
   esac
 done
 
-seen=""
-names=(); paths=()
-addp() {
-  local p="$1" b key
-  [ -d "$p" ] || return
-  b=$(basename "$p")
-  key=$(printf '%s' "$b" | tr '[:upper:]' '[:lower:]')
-  case "$seen" in *"|$key|"*) return ;; esac
-  seen="$seen|$key|"; names+=("$b"); paths+=("$p")
-}
-
-# priority order first (case-insensitive basename match), then the rest A-Z.
-for o in "${order[@]}"; do
-  for r in "${roots[@]}"; do
-    for p in "$r"/*/; do
-      [ -d "${p%/}" ] || continue
-      [ "$(basename "${p%/}" | tr '[:upper:]' '[:lower:]')" = "$(printf '%s' "$o" | tr '[:upper:]' '[:lower:]')" ] && addp "${p%/}"
-    done
+# Gather every project dir ONCE (pure-builtin basename via ${p##*/}, no forks).
+rawnames=(); rawpaths=()
+for r in "${roots[@]}"; do
+  for p in "$r"/*/; do
+    d="${p%/}"
+    [ -d "$d" ] || continue
+    rawpaths+=("$d"); rawnames+=("${d##*/}")
   done
 done
-rest=()
-for r in "${roots[@]}"; do
-  for p in "$r"/*/; do [ -d "${p%/}" ] && rest+=("${p%/}"); done
-done
-if [ ${#rest[@]} -gt 0 ]; then
-  while IFS= read -r line; do addp "$line"; done < <(printf '%s\n' "${rest[@]}" | sort -f)
+m=${#rawnames[@]}
+
+# Lowercase names + order entries. On Windows/Linux a fork costs ~500ms here, so
+# bash>=4 uses zero-fork builtin ${x,,}; bash 3.2 (macOS) falls back to one tr pass.
+lname=(); lorder=()
+if [ "${BASH_VERSINFO[0]:-0}" -ge 4 ]; then
+  for ((i=0; i<m; i++)); do lname+=("${rawnames[i],,}"); done
+  for o in "${order[@]}"; do lorder+=("${o,,}"); done
+else
+  [ "$m" -gt 0 ] && while IFS= read -r x; do lname+=("$x"); done < <(printf '%s\n' "${rawnames[@]}" | tr '[:upper:]' '[:lower:]')
+  [ ${#order[@]} -gt 0 ] && while IFS= read -r x; do lorder+=("$x"); done < <(printf '%s\n' "${order[@]}" | tr '[:upper:]' '[:lower:]')
 fi
+
+seen="|"
+names=(); paths=()
+addidx() {
+  local i="$1" key="${lname[$1]}"
+  case "$seen" in *"|$key|"*) return ;; esac
+  seen="$seen$key|"; names+=("${rawnames[i]}"); paths+=("${rawpaths[i]}")
+}
+
+# priority order first (case-insensitive name match), then the rest A-Z.
+for o in "${lorder[@]}"; do
+  for ((i=0; i<m; i++)); do [ "${lname[i]}" = "$o" ] && addidx "$i"; done
+done
+# remaining indices, insertion-sorted by lowercase name in pure bash (no sort fork).
+rest=()
+for ((i=0; i<m; i++)); do
+  case "$seen" in *"|${lname[i]}|"*) continue ;; esac
+  rest+=("$i")
+done
+for ((a=1; a<${#rest[@]}; a++)); do
+  key=${rest[a]}; kk=${lname[key]}; b=$((a-1))
+  while (( b>=0 )) && [[ ${lname[${rest[b]}]} > "$kk" ]]; do rest[b+1]=${rest[b]}; ((b--)); done
+  rest[b+1]=$key
+done
+for i in "${rest[@]}"; do addidx "$i"; done
 
 total=${#names[@]}
 n=$total

@@ -35,8 +35,12 @@ strip() {
 }
 
 hcenter() {
-  local s="$1" plain pad
-  plain=$(strip "$s")
+  local s="$1" plain="$1" pre rest pad
+  # inline strip (no subshell fork — runs on every render frame)
+  while [[ $plain == *$'\033['* ]]; do
+    pre=${plain%%$'\033['*}; rest=${plain#*$'\033['}
+    plain="$pre${rest#*m}"
+  done
   pad=$(( (COLS - ${#plain}) / 2 )); (( pad < 0 )) && pad=0
   printf '%*s%s\n' "$pad" '' "$s"
 }
