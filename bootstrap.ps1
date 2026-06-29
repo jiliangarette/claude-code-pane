@@ -10,7 +10,7 @@ $dest   = Join-Path $parent 'claude-code-pane'
 
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
   Write-Error 'git is required. Install Git for Windows: https://git-scm.com/download/win'
-  return
+  exit 1
 }
 
 New-Item -ItemType Directory -Force -Path $parent | Out-Null
@@ -26,7 +26,7 @@ if (Test-Path (Join-Path $dest '.git')) {
 $installer = Join-Path $dest 'install.ps1'
 if (-not (Test-Path $installer)) {
   Write-Error "install.ps1 not found at $installer"
-  return
+  exit 1
 }
 
 Write-Host "Running installer..."

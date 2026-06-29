@@ -86,6 +86,21 @@ Don't want to do it by hand? Paste this to Claude Code and let it set everything
 
 `Ctrl+Space` is left free (e.g. for a Whisper hotkey).
 
+## Performance
+
+WezTerm renders the grid on the GPU, so the panes themselves are cheap. The cost is
+**Claude Code**: each running instance is a Node process, and six or eight of them
+will saturate the CPU and RAM on a modest laptop — typing feels laggy because the
+machine is busy, not because the terminal is slow. This is workload, not Panes.
+
+To keep things light:
+
+- Leave `auto_launch_claude = false` (the default) and start Claude only in the panes
+  you're actively using (`Ctrl+A` then `C`).
+- Run fewer concurrent agents, or close panes you're done with (`Ctrl+A` then `X`).
+- Set `max_fps = 30` in `settings.lua` for a battery-first profile.
+- Keep `front_end = 'OpenGL'` (the lowest-lag renderer on Windows).
+
 ## License
 
 MIT © Jilian Garette Abangan
